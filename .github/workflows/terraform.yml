@@ -1,0 +1,37 @@
+name: Terraform Validate
+
+on:
+	push:
+		branches: [ main ]
+	pull_request:
+		branches: [ main ]
+
+jobs:
+	validate:
+		runs-on: ubuntu-latest
+		steps:
+			- name: Checkout
+				uses: actions/checkout@v4
+
+			- name: Set up Terraform
+				uses: hashicorp/setup-terraform@v2
+
+			- name: Install kustomize
+				run: |
+					sudo apt-get update
+					sudo apt-get install -y curl
+					curl -sSL https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v4.5.4/kustomize_v4.5.4_linux_amd64.tar.gz | tar -xz -C /tmp
+					sudo mv /tmp/kustomize /usr/local/bin/kustomize
+
+			- name: Show Makefile
+				run: sed -n '1,200p' Makefile || true
+
+			- name: Terraform init
+				run: make infra-init
+
+			- name: Terraform validate
+				run: terraform -chdir=terraform validate
+
+			- name: Kustomize build (validate)
+				run: kustomize build k3s-gitops/infrastructure/argocd
+

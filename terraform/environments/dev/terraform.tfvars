@@ -1,0 +1,10 @@
+environment         = "dev"
+project_name        = "kafka-platform"
+docker_enabled      = true
+k3s_enabled         = true
+kafka_enabled       = true
+monitoring_enabled  = true
+networking_enabled  = true
+kafka_broker_count  = 1
+kafka_replica_count = 1
+k3s_version         = "v1.28.0"
